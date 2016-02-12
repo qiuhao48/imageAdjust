@@ -1,5 +1,7 @@
 #import Image
 from qCtrlPoints import qCtrlPoints
+import inverseMapUtil
+import qGridPoints
 import pylab as pl
 
 def drawCtrlPoints(ctrlPoints):
@@ -24,6 +26,12 @@ def drawCtrlPoints(ctrlPoints):
     pl.plot(x, y, 'r*')
     pl.show()
 
-import math
+ctrlPntsA = qCtrlPoints(1024, 768, 2, 2)
+GridPntsA = qGridPoints.qGridPoints(1024, 768, 32)
 
-print math.ceil(0.7)
+drawCtrlPoints(ctrlPntsA)
+
+GridPntsA.update(ctrlPntsA)
+
+print GridPntsA.grid
+

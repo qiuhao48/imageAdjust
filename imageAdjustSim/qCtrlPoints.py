@@ -59,6 +59,12 @@ class qCtrlPoints:
     def getTriangle(self):
         return (self.srcTriangle, self.dstTriangle)
 
+    def getSrcTriangle(self):
+        return self.srcTriangle
+
+    def getDstTriangle(self):
+        return self.dstTriangle
+
     def calcMap(self):
 
         for i in range(self.raw+1):
@@ -70,7 +76,7 @@ class qCtrlPoints:
 
 if __name__ == '__main__':
 
-    ctrlPointsA = qCtrlPoints(1024, 768, 8, 8)
+    ctrlPointsA = qCtrlPoints(1024, 768, 20, 20)
 
     print ctrlPointsA.src
     print ctrlPointsA.dst
