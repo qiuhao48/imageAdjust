@@ -7,10 +7,10 @@ class qGridPoints:
 
     def __init__(self, width, height, res):
 
-        self.raw = int(math.ceil(float(width)/res)) # grid raw number
-        self.col = int(math.ceil(float(height)/res)) # grid column number
+        self.raw = int(math.ceil(float(height-1)/res))+1 # grid raw number
+        self.col = int(math.ceil(float(width-1)/res))+1 # grid column number
         self.res = res
-        self.grid = np.empty((self.raw, self.col, 1, 3)) # empty grid
+        self.grid = np.empty((self.raw, self.col, 3)) # empty grid
 
         self.refresh() # initial grid
 
@@ -27,11 +27,11 @@ class qGridPoints:
         minY = min(triangle[1])
 
         indexMaxX = int(math.ceil(float(maxX)/self.res))
-        indexMinX = minX/self.res
+        indexMinX = int(minX/self.res)
         indexMaxY = int(math.ceil(float(maxY)/self.res))
-        indexMinY = minY/self.res
+        indexMinY = int(minY/self.res)
 
-        if (indexMaxX < 0) or (indexMaxY < 0) or (indexMinX > self.col) or (indexMinY < self.raw):
+        if (indexMaxX < 0) or (indexMaxY < 0) or (indexMinX > self.col-1) or (indexMinY > self.raw-1):
             return
 
         if indexMinX < 0:
@@ -40,11 +40,11 @@ class qGridPoints:
         if indexMinY < 0:
             indexMinY = 0
 
-        if indexMaxX > (self.raw-1):
-            indexMaxX = self.raw-1
+        if indexMaxX > (self.col-1):
+            indexMaxX = self.col-1
 
-        if indexMaxY > (self.col-1):
-            indexMaxY = self.col-1
+        if indexMaxY > (self.raw-1):
+            indexMaxY = self.raw-1
 
         for rawIndex in range(indexMinY, indexMaxY+1):
             for colIndex in range(indexMinX, indexMaxX+1):
@@ -53,7 +53,7 @@ class qGridPoints:
                 flagTemp = inverseMapUtil.qPointInTriangle(point, triangle)
                 if flagTemp:
                     pointMapped = inverseMapUtil.qHaffineMapper(point, map)
-                    self.grid[rawIndex, colIndex] = [pointMapped[0],pointMapped[1],1]
+                    self.grid[rawIndex, colIndex] = [pointMapped[0], pointMapped[1], 1]
 
     def update(self, ctrlPoints):
 
@@ -61,7 +61,6 @@ class qGridPoints:
             pass
         else:
             return
-
 
         for indexRaw in range(ctrlPoints.raw+1):
             for indexCol in range(2*ctrlPoints.col+2):

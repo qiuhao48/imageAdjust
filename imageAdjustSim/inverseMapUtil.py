@@ -50,7 +50,7 @@ def qHaffineMapper(point, hafMap):
 
     matrix = hafMap[0:2]
     offset = hafMap[2]
-    return np.dot(matrix, point) + offset
+    return np.dot(matrix.transpose(), point) + offset
 
 
 
@@ -61,9 +61,12 @@ if __name__ == '__main__':
     #for i in range(1000):
     #    pointInTriangle(point, triangle)
 
-    srcTriangle = np.array([[0,1,1],[0,0,1]])
-    dstTriangle = np.array([[0,2,2],[0,0,2]])
+    srcTriangle = np.array([[0,1023,0],[0,767,767]])
+    dstTriangle = np.array([[-100,1023,0],[-100,767,767]])
+    map = qHaffineMapSolver(dstTriangle, srcTriangle)
+    print map
 
-    for i in range(1280):
-        qHaffineMapSolver(srcTriangle, dstTriangle)
-        qHaffineMapSolver(dstTriangle, srcTriangle)
+    for i in range(10):
+        point = np.array([0, 32*i])
+        flag = qPointInTriangle(point, dstTriangle)
+        print flag, qHaffineMapper(point, map)
