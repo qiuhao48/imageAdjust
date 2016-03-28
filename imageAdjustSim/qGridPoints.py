@@ -7,7 +7,7 @@ class qGridPoints:
 
     def __init__(self, width, height, res):
 
-        self.raw = int(math.ceil(float(height-1)/res))+1 # grid raw number
+        self.raw = int(math.ceil((int(math.ceil(float(height-1)/res))+1)/2))*2 # grid raw number
         self.col = int(math.ceil(float(width-1)/res))+1 # grid column number
         self.res = res
         self.grid = np.empty((self.raw, self.col, 3)) # empty grid
@@ -26,10 +26,10 @@ class qGridPoints:
         maxY = max(triangle[1])
         minY = min(triangle[1])
 
-        indexMaxX = int(math.ceil(float(maxX)/self.res))
-        indexMinX = int(minX/self.res)
-        indexMaxY = int(math.ceil(float(maxY)/self.res))
-        indexMinY = int(minY/self.res)
+        indexMaxX = int(math.ceil(float(maxX)/self.res))+2
+        indexMinX = int(minX/self.res)-2
+        indexMaxY = int(math.ceil(float(maxY)/self.res))+2
+        indexMinY = int(minY/self.res)-2
 
         if (indexMaxX < 0) or (indexMaxY < 0) or (indexMinX > self.col-1) or (indexMinY > self.raw-1):
             return

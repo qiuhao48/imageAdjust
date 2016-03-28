@@ -3,6 +3,7 @@ from qCtrlPoints import qCtrlPoints
 import inverseMapUtil
 import qGridPoints
 import pylab as pl
+import numpy as np
 
 def drawCtrlPoints(ctrlPoints):
     if isinstance(ctrlPoints, qCtrlPoints):
@@ -52,19 +53,77 @@ def drawGridPoints(gridPoints):
     pl.plot(x, y, 'r*')
     pl.show()
 
+width = 2000
+height = 2000
+row = 20
+col = 20
+k = 15
+res = 32
+
+pts00 = np.array([500,20])
+pts01 = np.array([1500,30])
+pts10 = np.array([100,1899])
+pts11 = np.array([1899,1799])
 
 
-ctrlPntsA = qCtrlPoints(1920, 1080, 4, 4)
+ctrlPntsA = qCtrlPoints(width, height, row, col, k)
 
-ctrlPntsA.setPoint(0,0,20,20)
-ctrlPntsA.setPoint(3,3,1900,1000)
-ctrlPntsA.setPoint(0,3,1900,20)
-ctrlPntsA.setPoint(3,0,20,1000)
+for i in range(row):
+    for j in range(col):
+        temp1 = pts00*(col-1-j)/(col-1)+pts01*j/(col-1)
+        temp2 = pts10*(col-1-j)/(col-1)+pts11*j/(col-1)
+        temp  = temp1*(row-1-i)/(row-1)+temp2*i/(row-1)
+        ctrlPntsA.setPoint(i,j,temp[0],temp[1])
+
 ctrlPntsA.extendBoundaryDst()
-#drawCtrlPoints(ctrlPntsA)
+drawCtrlPoints(ctrlPntsA)
 
-GridPntsA = qGridPoints.qGridPoints(1920, 1080, 32)
+GridPntsA = qGridPoints.qGridPoints(width, height, res)
 GridPntsA.update(ctrlPntsA)
 
 #print GridPntsA.grid
 drawGridPoints(GridPntsA)
+
+
+
+# src grid
+file = open('C:/Users/qiule/Desktop/src.dat','w')
+
+str_temp = 'width = %d\nheight = %d\nrow = %d\ncol = %d\nk = %d\nres = %d\n\n' % (width, height, row, col, k, res)
+file.write(str_temp)
+
+str_temp = '[src grid] %d * %d\n\n' % (row+2, col+2)
+file.write(str_temp)
+for i in range(row+2):
+    for j in range(col+2):
+        str_temp = '%f %f\n' % (ctrlPntsA.src[i,j,0],ctrlPntsA.src[i,j,1])
+        file.write(str_temp)
+file.write('\n\n')
+#file.close()
+
+#dst grid
+#file = open('C:/Users/qiule/Desktop/dst.dat','w')
+str_temp = '[dst grid] %d * %d\n\n' % (row+2, col+2)
+file.write(str_temp)
+for i in range(row+2):
+    for j in range(col+2):
+        str_temp = '%f %f\n' % (ctrlPntsA.dst[i,j,0],ctrlPntsA.dst[i,j,1])
+        file.write(str_temp)
+file.write('\n\n')
+#file.close()
+
+#lut
+str_temp = '[lut] %d * %d\n\n' % (GridPntsA.raw, GridPntsA.col)
+file.write(str_temp)
+for i in range(GridPntsA.raw):
+    for j in range(GridPntsA.col):
+        str_temp = '%f %f\n' % (GridPntsA.grid[i,j,0],GridPntsA.grid[i,j,1])
+        file.write(str_temp)
+
+file.close()
+
+for i in range(GridPntsA.raw):
+    for j in range(GridPntsA.col):
+        if GridPntsA.grid[i,j,2]==0:
+            print i,j
+

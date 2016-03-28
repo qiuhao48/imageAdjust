@@ -4,11 +4,12 @@ import inverseMapUtil
 
 class qCtrlPoints:
 
-    def __init__(self, width, height, rawNum, colNum):
+    def __init__(self, width, height, rawNum, colNum, k):
         self.src = np.empty((rawNum+2, colNum+2, 2))
         self.dst = np.empty((rawNum+2, colNum+2, 2))
         self.raw = rawNum
         self.col = colNum
+        self.k   = k
 
         self.map = np.empty((self.raw+1,2*(self.col+1),3,2))
         self.srcTriangle = np.empty((self.raw+1, 2*(self.col+1), 2, 3))
@@ -22,25 +23,25 @@ class qCtrlPoints:
                 self.src[i+1, j+1] = [j * stepRaw, i * stepCol]
                 self.dst[i+1, j+1] = [j * stepRaw, i * stepCol]
 
-        self.__extendBoundary(self.src)
-        self.__extendBoundary(self.dst)
+        self.__extendBoundary(self.src,self.k)
+        self.__extendBoundary(self.dst,self.k)
 
-    def __extendBoundary(self, points):
+    def __extendBoundary(self, points, k):
 
-        points[0,0] = 2*points[1,1] - points[2,2]
-        points[self.raw+1,self.col+1] = 2*points[self.raw,self.col] - points[self.raw-1,self.col-1]
-        points[0,self.col+1] = 2*points[1,self.col] - points[2,self.col-1]
-        points[self.raw+1,0] = 2*points[self.raw,1] - points[self.raw-1,2]
+        points[0,0] = (k+1)*points[1,1] - k*points[2,2]
+        points[self.raw+1,self.col+1] = (k+1)*points[self.raw,self.col] - k*points[self.raw-1,self.col-1]
+        points[0,self.col+1] = (k+1)*points[1,self.col] - k*points[2,self.col-1]
+        points[self.raw+1,0] = (k+1)*points[self.raw,1] - k*points[self.raw-1,2]
 
-        points[0,1:self.col+1] = 2*points[1,1:self.col+1] - points[2,1:self.col+1]
-        points[self.raw+1,1:self.col+1] = 2*points[self.raw,1:self.col+1] - points[self.raw-1,1:self.col+1]
+        points[0,1:self.col+1] = (k+1)*points[1,1:self.col+1] - k*points[2,1:self.col+1]
+        points[self.raw+1,1:self.col+1] = (k+1)*points[self.raw,1:self.col+1] - k*points[self.raw-1,1:self.col+1]
 
-        points[1:self.raw+1,0] = 2*points[1:self.raw+1,1] - points[1:self.raw+1,2]
-        points[1:self.raw+1,self.col+1] = 2*points[1:self.raw+1,self.col] - points[1:self.raw+1,self.col-1]
+        points[1:self.raw+1,0] = (k+1)*points[1:self.raw+1,1] - k*points[1:self.raw+1,2]
+        points[1:self.raw+1,self.col+1] = (k+1)*points[1:self.raw+1,self.col] - k*points[1:self.raw+1,self.col-1]
 
 
     def extendBoundaryDst(self):
-        self.__extendBoundary(self.dst)
+        self.__extendBoundary(self.dst, self.k)
         self.calcTriangle()
         self.calcMap()
 
@@ -76,7 +77,7 @@ class qCtrlPoints:
 
 if __name__ == '__main__':
 
-    ctrlPointsA = qCtrlPoints(1024, 768, 20, 20)
+    ctrlPointsA = qCtrlPoints(1024, 768, 20, 20, 2)
 
     print ctrlPointsA.src
     print ctrlPointsA.dst
